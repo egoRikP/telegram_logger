@@ -4,7 +4,8 @@ const { ensureDayFolder } = require("./utils");
 
 async function appendMessage({ chatId, chatName, chatType, direction, from, to, text, media }) {
   const dir = ensureDayFolder();
-  const safeName = chatName.replace(/[^a-z0-9_а-яіїє\-]/gi, "_");
+  const safeName = (chatName || `chat_${chatId || "unknown"}`)
+    .replace(/[^a-z0-9_а-яіїє\-]/gi, "_");
   const base = `${chatType}_${safeName}_${chatId}`;
 
   const txtPath = path.join(dir, `${base}.txt`);
