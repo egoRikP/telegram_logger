@@ -75,7 +75,10 @@ async function startListener() {
       const isOutgoing = msg.out || sender?.id === meId;
       const direction = isOutgoing ? "OUTGOING" : "INCOMING";
 
-      let chatType, chatName, from, to;
+      let chatType = "unknown";
+      let chatName = chat.title || chat.username || `chat${chat.id}`;
+      let from = "unknown";
+      let to = chatName;
 
       if (chat.className === "User") {
         chatType = "private";
@@ -96,6 +99,24 @@ async function startListener() {
           from = chatUserName;
           to = meName + " (me)";
         }
+      } else if (chat.className === "Chat") {
+        chatType = "group";
+        chatName = chat.title || chat.username || `group${chat.id}`;
+
+        const senderName =
+          sender?.username || sender?.firstName || `user${sender?.id || "unknown"}`;
+
+        from = isOutgoing ? meName + " (me)" : senderName;
+        to = chatName;
+      } else if (chat.className === "Channel") {
+        chatType = chat.megagroup ? "supergroup" : "channel";
+        chatName = chat.title || chat.username || `channel${chat.id}`;
+
+        const senderName =
+          sender?.username || sender?.firstName || chatName || `user${sender?.id || "unknown"}`;
+
+        from = isOutgoing ? meName + " (me)" : senderName;
+        to = chatName;
       }
 
       const text = msg.message || "";
